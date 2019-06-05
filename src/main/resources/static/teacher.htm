@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>教师系统</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+	<!-- jquery -->
+	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<!-- bootstrap -->
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+	<!-- jquery-validator -->
+	<script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+	<!-- layer -->
+	<script type="text/javascript" src="/layer/layer.js"></script>
+	<!-- md5.js -->
+	<script type="text/javascript" src="/js/md5.min.js"></script>
+	<!-- common.js -->
+	<script type="text/javascript" src="/js/common.js"></script>
+	<!-- active-class.js -->
+	<script type="text/javascript" src="/js/active-class.js"></script>
+
+	<link type="text/css" rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+
+<div class="container-fluid">
+	<div class="header"></div>
+
+	<div>
+		<section class="pc-banner">
+			<div class="swiper-container">
+				<div class="swiper-wrapper">
+					<div class="swiper-slide swiper-slide-center none-effect">
+						<img src="images/home1.jpg">
+						<div class="layer-mask"></div>
+					</div>
+					<div class="swiper-slide">
+						<img src="images/home2.jpg">
+						<div class="layer-mask"></div>
+					</div>
+					<div class="swiper-slide">
+						<img src="images/home3.jpg">
+						<div class="layer-mask"></div>
+					</div>
+				</div>
+				<div class="button">
+					<div class="swiper-button-prev"></div>
+					<div class="swiper-button-next"></div>
+				</div>
+			</div>
+		</section>
+		<script type="text/javascript" src="js/swiper.min.js"></script>
+		<script type="text/javascript">
+
+			window.onload = function () {
+				var swiper = new Swiper('.swiper-container', {
+					autoplay: false,
+					speed: 1000,
+					autoplayDisableOnInteraction: false,
+					loop: true,
+					centeredSlides: true,
+					slidesPerView: 3,
+					pagination: '.swiper-pagination',
+					paginationClickable: true,
+					prevButton: '.swiper-button-prev',
+					nextButton: '.swiper-button-next',
+					onInit: function (swiper) {
+						swiper.slides[2].className = "swiper-slide";
+					},
+					breakpoints: {
+						668: {
+							slidesPerView: 1,
+						}
+					}
+				});
+			}
+		</script>
+
+	</div>
+</div>
+</body>
+<script>
+	teacher('home');
+</script>
+</html>

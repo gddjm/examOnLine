@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>学生系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+
+    <div class="rule">
+        <div class="row-fluid">
+            <div class="span12">
+                <p class="text-center" style="margin-top: 10px">
+                    <strong><em>准备考试</em></strong>
+                </p>
+            </div>
+        </div>
+
+        <div style="font-size: large; margin: 30px auto 30px auto; text-align: center"><strong><span id="time"></span>后进入考试</strong></div>
+
+
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-2">
+                <button class="btn btn-primary btn-block" onclick="refresh()">刷新</button>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary btn-block" onclick="geReturn()">返回</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+<script th:inline="javascript">
+    student('exam');
+
+    var time = [[${remaining_time}]];
+
+    /* <![CDATA[ */
+    setInterval(function () {
+        if (time <= 0 ){
+            layer.msg("开始考试");
+            window.location.href = "/stu/start_exam";
+        } else {
+            var minute = parseInt(time/1000/60%20);
+            var second = parseInt(time/1000%60);
+            if (minute > 0){
+                var text = minute+"分"+ second + "秒";
+            } else{
+                var text = second + "秒";
+                if (second <= 30){
+                    $("#time").css("color","red");
+                    $("#time").css("fontSize","24px");
+                }
+            }
+
+            $("#time").text(text);
+            time -= 1000;
+        }
+    },1000);
+    /* ]]> */
+
+    function refresh() {
+        window.location.href = "/stu/start_exam";
+    }
+
+    function geReturn() {
+        window.location.href = "/exam-rule.htm";
+    }
+</script>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>学生系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+
+    <div class="rule">
+        <div class="row-fluid">
+            <div class="span12" style="margin-top: 20px">
+                <p class="text-center">
+                    <strong><em>英语四六级考场规则及守则</em></strong>
+                </p>
+            </div>
+        </div>
+        <div style="margin-left: 20%;margin-right: 20%">
+	<pre style="">
+
+	一、按照省教育考试院和学校的要求签署《诚信考试承诺书》。
+	二、必须按规定的时间(上午8：45开始，下午2：45开始)入场，入场开始15分钟(即上午9：00，下午3：00)后，
+	禁止入场。入场时必须主动出示准考证以及有效身份证件(考生要出示的有效身份证件为学生证和下列证件之一：
+	居民身份证、军人及武警人员证件、户口本、公安户籍部门开具的贴有近期免冠照片的身份证号码证明、护照等)，
+	接受考试工作人员核验，并按要求在考场座位表上签名。
+	三、只准携带必要的文具入场,如2B铅笔(涂答题卡用)、黑色签字笔、橡皮。禁止携带任何书籍、笔记、资料、报刊、
+	草稿纸以及各种无线通信工具(如寻呼机、移动电话)、录放音机、电子记事本等物品。考场内不得擅自相互借用
+	文具。
+	四、入场后，要对号入座，将本人准考证以及有效身份证件放在课桌上，以便核验。
+	五、答题前应认真填写答题卡中的姓名、准考证号等栏目。凡答题卡中该栏目漏填涂、错填涂或字迹不清、无法辩认的，
+	答题卡一律无效，作零分处理。
+	六、除有特殊原因，在考试结束前禁止提前退场。
+	七、必须严格按要求做答题目。书写部分一律用黑色字迹签字笔做答，填涂信息点时只能用铅笔(2B)涂黑。只能在规
+	定考生做答的位置书写或填涂信息点。不按规定要求填涂和做答的，一律无效。
+	八、在四、六级考试过程中，提前翻阅试题册的按违纪处理，成绩为零。
+	九、遇试卷分发错误或试题字迹不清等情况应及时要求更换;涉及试题内容的疑问，不得向监考员询问。
+	十、在考场内必须严格遵守考场纪律，对于违反考场规定和不服从考试工作人员管理者，取消考试成绩并按校纪校规
+	处理。
+	十一、考试结束铃声响时，要立即停止答题，将试卷扣放在桌面上，待监考员允许后方可离开考场。离开考场时必须
+	交卷，不准携带试卷、答题卡离开考场。
+	十二、自觉服从考试工作人员的管理，不得以任何理由妨碍监考员进行正常工作。监考员有权对考场内发生的问题，
+	按规定作出相应处理。对扰乱考场秩序，恐吓、威胁考试工作人员的将移交公安机关追究其责任。
+		</pre>
+        </div>
+
+
+        <button class="btn btn-primary btn-block" onclick="startExam()"
+                style="max-width:300px;margin-bottom: 20px;margin-left: 40%">
+            同意
+        </button>
+    </div>
+
+</div>
+</body>
+<script>
+    student('exam');
+
+    function startExam() {
+        window.location.href = "/stu/start_exam";
+    }
+
+</script>
+</html>

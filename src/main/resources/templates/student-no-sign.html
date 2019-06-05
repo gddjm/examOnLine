@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>学生系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" th:src="@{/jquery-validation/jquery.validate.min.js}"></script>
+    <script type="text/javascript" th:src="@{/jquery-validation/localization/messages_zh.min.js}"></script>
+    <!-- layer -->
+    <script type="text/javascript" th:src="@{/layer/layer.js}"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" th:src="@{/js/md5.min.js}"></script>
+    <!-- common.js -->
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+    <div th:class="rule">
+        <div class="row-fluid">
+            <div class="span12">
+                <p class="text-center">
+                    <strong><em>提示</em></strong>
+                </p>
+            </div>
+        </div>
+        <div class="row">考生暂未报名考试</div>
+
+
+        <button class="btn btn-primary btn-block" onclick="startExam()"
+                style="max-width:300px;margin-bottom: 20px;margin-left: 40%">
+            再次尝试
+        </button>
+    </div>
+
+</div>
+</body>
+<script>
+    $(function () {
+        $('.header').load('/student-header.htm');
+    });
+    function startExam() {
+        window.location.href = "/stu/start_exam";
+    }
+
+</script>
+</html>

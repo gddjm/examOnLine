@@ -1,0 +1,189 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>管理员系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" th:src="@{/jquery-validation/jquery.validate.min.js}"></script>
+    <script type="text/javascript" th:src="@{/jquery-validation/localization/messages_zh.min.js}"></script>
+    <!-- layer -->
+    <script type="text/javascript" th:src="@{/layer/layer.js}"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" th:src="@{/js/md5.min.js}"></script>
+    <!-- common.js -->
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+            <h3 class="text-center">
+                <strong>管理员系统</strong>
+            </h3>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <ul class="nav nav-tabs">
+                <li>
+                    <a href="/admin/home">首页</a>
+                </li>
+                <li class="active">
+                    <a href="/admin/user_information">用户信息管理</a>
+                </li>
+                <li>
+                    <a href="/admin/score">成绩管理</a>
+                </li>
+                <li>
+                    <a href="/admin/questions">试题管理</a>
+                </li>
+                <li>
+                    <a href="/admin/information">个人信息修改</a>
+                </li>
+                <li class="dropdown pull-right">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">更多 》》</a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/commun/about">关于我们</a>
+                        </li>
+                        <li>
+                            <a href="/commun/help">帮助</a>
+                        </li>
+                        <li class="divider">
+                        </li>
+                        <li>
+                            <a href="/admin/update_password">修改密码</a>
+                        </li>
+                        <li>
+                            <a href="/admin/logout">注销</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+
+    <div class="panel panel-default" >
+        <div class="panel-heading text-center">修改教师信息</div>
+        <form id="examForm" method="post" name="examForm"
+              style="width:600px; margin:20px auto; padding:25px 25px 25px 25px; border:3px solid deepskyblue">
+            <table class="table" border="1" with="500px">
+                <tr>
+                    <td>准考账号</td>
+                    <td id="teacher_id" th:text="${teacher.id}"></td>
+                </tr>
+                <tr>
+                    <td>姓名</td>
+                    <td><input type="text" id="name" th:value="${teacher.name}"/></td>
+                </tr>
+                <tr>
+                    <td>性别</td>
+                    <td><input type="text" id="sex" th:value="${teacher.sex}"/></td>
+                </tr>
+                <tr>
+                    <td>年龄</td>
+                    <td><input type="text" id="age" th:value="${teacher.age}"/></td>
+                </tr>
+                <tr>
+                    <td>手机号码</td>
+                    <td><input type="text" id="phone" th:value="${teacher.phone}"/></td>
+                </tr>
+                <tr>
+                    <td>QQ</td>
+                    <td><input type="text" id="qq" th:value="${teacher.qq}"/></td>
+                </tr>
+                <tr>
+                    <td>email</td>
+                    <td><input type="text" id="email" th:value="${teacher.email}"/></td>
+                </tr>
+                <tr>
+                    <td>密码（加密前）</td>
+                    <td><input type="password" id="password" placeholder="(未修改)" minlength="6" maxlength="16"/></td>
+                </tr>
+
+            </table>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="reset">重置</button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary btn-block" type="submit" onclick="updateTeacher()">完成</button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="button" onclick="goReturn()">返回</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+<p hidden="hidden" id="salt" th:text="${teacher.salt}"></p>
+<p hidden="hidden" id="old_password" th:text="${teacher.password}"></p>
+</body>
+<script>
+    function updateTeacher() {
+        $("#examForm").validate({
+            submitHandler: function (form) {
+                doUpate();
+            }
+        });
+    }
+
+    function goReturn() {
+        window.location.href = "/admin/show_teacher";
+    }
+
+    function doUpate() {
+        var inputPass = $("#password").val();
+        var dbPass;
+        if (inputPass != ""){
+            var salt = g_passsword_salt;
+            var str = "" + salt.charAt(0) + salt.charAt(2) + inputPass + salt.charAt(5) + salt.charAt(4);
+            dbPass = md5(str);
+        } else {
+            dbPass = inputPass;
+        }
+
+
+        $.ajax({
+            url: "/admin/do_update_teacher",
+            type: "POST",
+            data: {
+                id: $("#teacher_id").text(),
+                name: $("#name").val(),
+                sex: $("#sex").val(),
+                age:$("#age").val(),
+                phone: $("#phone").val(),
+                qq: $("#qq").val(),
+                email: $("#email").val(),
+                password: dbPass,
+                salt: $("#salt").text(),
+            },
+            success: function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg("成功");
+                    window.location.href = "/admin/show_teacher";
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.closeAll();
+            }
+        });
+    }
+
+</script>
+</html>

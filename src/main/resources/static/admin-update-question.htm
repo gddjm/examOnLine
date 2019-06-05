@@ -1,0 +1,225 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>管理员系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+
+    <style>
+        textarea {
+            width: 400px;
+            height: 200px;
+            resize: none;
+        }
+    </style>
+
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading text-center">修改试题</div>
+        <form id="examForm" method="post" name="examForm"
+              style="width:600px; margin:20px auto; padding:25px 25px 25px 25px; border:3px solid deepskyblue">
+            <table class="table" border="1" with="500px">
+                <tr>
+                    <td>试题编号</td>
+                    <td id="question_id"></td>
+                </tr>
+                <tr>
+                    <td>试题类型</td>
+                    <td>
+                        <select id="question_type">
+                            <option value="choice">选择题</option>
+                            <option value="writing">写作题</option>
+                            <option value="translation">翻译题</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>题干</td>
+                    <td><textarea id="question"></textarea></td>
+                </tr>
+                <tr class="choice">
+                    <td>A</td>
+                    <td><input type="text" id="option1"/></td>
+                </tr>
+                <tr class="choice">
+                    <td>B</td>
+                    <td><input type="text" id="option2"/></td>
+                </tr>
+                <tr class="choice">
+                    <td>C</td>
+                    <td><input type="text" id="option3"/></td>
+                </tr>
+                <tr class="choice">
+                    <td>D</td>
+                    <td><input type="text" id="option4"/></td>
+                </tr>
+                <tr>
+                    <td>分值</td>
+                    <td><input type="text" id="score"/></td>
+                </tr>
+                <tr>
+                    <td>参考答案</td>
+                    <td>
+                        <input type="text" id="choice_answer"/>
+                        <textarea id="not_choice_answer"></textarea>
+                    </td>
+                </tr>
+
+            </table>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="reset" onclick="getQuestion()">重置</button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary btn-block" type="submit" onclick="updateQuestion()">完成</button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="button" onclick="goReturn()">返回</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+</body>
+<script>
+    admin('questions');
+    var questionId = g_getQueryString("questionId");
+    function getQuestion(){
+        $.ajax({
+            url: "/admin/update_question/" + questionId,
+            type: "GET",
+            success: function (data) {
+                if (data.code == 0) {
+                    render(data.data);
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        });
+    }
+    $(function () {
+        getQuestion();
+        $("#question_type").bind("change", function() {
+            if(this.value == "choice") {
+                $(".choice").show();
+                $("#not_choice_answer").hide();
+                $("#choice_answer").show();
+            } else {
+                $(".choice").hide();
+                $("#choice_answer").hide();
+                $("#not_choice_answer").show();
+            }
+        });
+    });
+
+    function render(question) {
+        $("#question_id").text(question.questionId);
+        $("#question_type").val(question.questionType);
+        $("#question").text(question.question);
+        if (question.questionType == 'choice') {
+            $("#option1").val(question.option1);
+            $("#option2").val(question.option2);
+            $("#option3").val(question.option3);
+            $("#option4").val(question.option4);
+            $("#choice_answer").val(question.answer);
+            $("#not_choice_answer").hide();
+        } else {
+            $(".choice").hide();
+            $("#not_choice_answer").text(question.answer);
+            $("#choice_answer").hide();
+        }
+        $("#score").val(question.score);
+
+    }
+
+    function updateQuestion() {
+        $("#examForm").validate({
+            submitHandler: function (form) {
+                doUpate();
+            }
+        });
+    }
+
+    function goReturn() {
+        window.location.href = "/admin/questions";
+    }
+
+    function doUpate() {
+        var questionType = $("#question_type").val();
+        var answer;
+        var question = {};
+
+        if (questionType == 'choice') {
+            answer = $("#choice_answer").val();
+            question = {
+                questionId: questionId,
+                question: $("#question").val(),
+                questionType: questionType,
+                option1: $("#option1").val(),
+                option2: $("#option2").val(),
+                option3: $("#option3").val(),
+                option4: $("#option4").val(),
+                score: $("#score").val(),
+                answer: answer
+            };
+        }else {
+            answer = $("#not_choice_answer").val();
+            question = {
+                questionId: questionId,
+                question: $("#question").val(),
+                questionType: questionType,
+                score: $("#score").val(),
+                answer: answer
+            };
+
+        }
+
+        $.ajax({
+            url: "/admin/do_update_question",
+            type: "POST",
+            data: question,
+            success: function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg("成功");
+                    window.location.href = "/admin/questions";
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.closeAll();
+            }
+        });
+    }
+
+</script>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>管理员系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+
+    <div class="panel panel-default" >
+        <div class="panel-heading text-center">修改教师信息</div>
+        <form id="examForm" method="post" name="examForm"
+              style="width:600px; margin:20px auto; padding:25px 25px 25px 25px; border:3px solid deepskyblue">
+            <table class="table" border="1" with="500px">
+                <tr>
+                    <td>准考账号</td>
+                    <td id="teacher_id"></td>
+                </tr>
+                <tr>
+                    <td>姓名</td>
+                    <td><input type="text" id="name"/></td>
+                </tr>
+                <tr>
+                    <td>性别</td>
+                    <td>
+                        <select id="sex">
+                            <option value="male">男</option>
+                            <option value="female">女</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>年龄</td>
+                    <td><input type="text" id="age"/></td>
+                </tr>
+                <tr>
+                    <td>手机号码</td>
+                    <td><input type="text" id="phone"/></td>
+                </tr>
+                <tr>
+                    <td>QQ</td>
+                    <td><input type="text" id="qq"/></td>
+                </tr>
+                <tr>
+                    <td>email</td>
+                    <td><input type="text" id="email"/></td>
+                </tr>
+                <tr>
+                    <td>密码（加密前）</td>
+                    <td><input type="password" id="password" placeholder="(未修改)" minlength="6" maxlength="16"/></td>
+                </tr>
+
+            </table>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="reset" onclick="getTeacher()">重置</button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary btn-block" type="submit" onclick="updateTeacher()">完成</button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="button" onclick="goReturn()">返回</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+</body>
+<script>
+    admin('user-information');
+
+    var teacherId = g_getQueryString("teacherId");
+    var salt;
+    var oldPassword;
+
+    function render(teacher) {
+        $("#teacher_id").text(teacher.id);
+        $("#name").val(teacher.name);
+        $("#sex").val(teacher.sex);
+
+        $("#age").val(teacher.age);
+        $("#phone").val(teacher.phone);
+        $("#qq").val(teacher.qq);
+        $("#email").val(teacher.email);
+        salt=student.salt;
+        oldPassword=student.password;
+    }
+    function getTeacher(){
+        $.ajax({
+            url: "/admin/read_teacher/" + teacherId,
+            type: "GET",
+            success: function (data) {
+                if (data.code == 0) {
+                    render(data.data);
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        });
+    }
+
+    $(function () {
+        getTeacher();
+    });
+
+
+    function updateTeacher() {
+        $("#examForm").validate({
+            submitHandler: function (form) {
+                doUpate();
+            }
+        });
+    }
+
+    function goReturn() {
+        window.location.href = "/admin/show_teacher";
+    }
+
+    function doUpate() {
+        var inputPass = $("#password").val();
+        var dbPass;
+        if (inputPass != ""){
+            var salt = g_passsword_salt;
+            var str = "" + salt.charAt(0) + salt.charAt(2) + inputPass + salt.charAt(5) + salt.charAt(4);
+            dbPass = md5(str);
+        } else {
+            dbPass = oldPassword;
+        }
+
+
+        $.ajax({
+            url: "/admin/do_update_teacher",
+            type: "POST",
+            data: {
+                id: teacherId,
+                name: $("#name").val(),
+                sex: $("#sex").val(),
+                age:$("#age").val(),
+                phone: $("#phone").val(),
+                qq: $("#qq").val(),
+                email: $("#email").val(),
+                password: dbPass,
+                salt: salt,
+            },
+            success: function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg("成功");
+                    window.location.href = "/admin/show_teacher";
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.closeAll();
+            }
+        });
+    }
+
+</script>
+</html>

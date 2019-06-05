@@ -1,0 +1,96 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>管理员系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" th:src="@{/jquery-validation/jquery.validate.min.js}"></script>
+    <script type="text/javascript" th:src="@{/jquery-validation/localization/messages_zh.min.js}"></script>
+    <!-- layer -->
+    <script type="text/javascript" th:src="@{/layer/layer.js}"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" th:src="@{/js/md5.min.js}"></script>
+    <!-- common.js -->
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+            <h3 class="text-center">
+                <strong>管理员系统</strong>
+            </h3>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <ul class="nav nav-tabs">
+                <li>
+                    <a href="/admin/home">首页</a>
+                </li>
+                <li class="active">
+                    <a href="/admin/user_information">用户信息管理</a>
+                </li>
+                <li>
+                    <a href="/admin/score">成绩管理</a>
+                </li>
+                <li>
+                    <a href="/admin/questions">试题管理</a>
+                </li>
+                <li>
+                    <a href="/admin/information">个人信息修改</a>
+                </li>
+                <li class="dropdown pull-right">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">更多 》》</a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/commun/about">关于我们</a>
+                        </li>
+                        <li>
+                            <a href="/commun/help">帮助</a>
+                        </li>
+                        <li class="divider">
+                        </li>
+                        <li>
+                            <a href="/admin/update_password">修改密码</a>
+                        </li>
+                        <li>
+                            <a href="/admin/logout">注销</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="row"  >
+        <div class="col-md-4"></div>
+        <div class="col-md-2">
+            <button class="btn btn-primary btn-block" onclick="student_information()">学生信息</button>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary btn-block" onclick="teacher_information()" >教师信息</button>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    function student_information() {
+        window.location.href = "/admin/show_student";
+    }
+    function teacher_information() {
+        window.location.href = "/admin/show_teacher";
+    }
+
+</script>
+
+</html>

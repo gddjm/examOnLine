@@ -1,0 +1,135 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>管理员系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+
+    <div class="panel panel-default" >
+        <div class="panel-heading text-center">查看学生信息</div>
+        <form id="examForm" method="post" name="examForm"
+              style="width:600px; margin:20px auto; padding:25px 25px 25px 25px; border:3px solid deepskyblue">
+            <table class="table" border="1" with="500px">
+                <tr>
+                    <td>准考账号</td>
+                    <td id="student_id"></td>
+                </tr>
+                <tr>
+                    <td>姓名</td>
+                    <td id="name"></td>
+                </tr>
+                <tr>
+                    <td>性别</td>
+                    <td id="sex"></td>
+                </tr>
+                <tr>
+                    <td>年龄</td>
+                    <td id="age"></td>
+                </tr>
+                <tr>
+                    <td>手机号码</td>
+                    <td id="phone"></td>
+                </tr>
+                <tr>
+                    <td>QQ</td>
+                    <td id="qq"></td>
+                </tr>
+                <tr>
+                    <td>email</td>
+                    <td id="email"></td>
+                </tr>
+                <tr>
+                    <td>密码（加密后）</td>
+                    <td id="password"></td>
+                </tr>
+
+            </table>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="button" onclick="deleteStudent()">删除</button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary btn-block" type="button" onclick="update()">进行修改</button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="button" onclick="goReturn()">返回</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+</body>
+<script>
+    admin('user-information');
+
+    var studentId = g_getQueryString("studentId");
+    $(function () {
+        $.ajax({
+            url: "/admin/read_student/"+studentId,
+            type: "GET",
+            success: function (data) {
+                if (data.code == 0) {
+                    render(data.data);
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        });
+    });
+
+    function render(student) {
+        $("#student_id").text(student.id);
+        $("#name").text(student.name);
+        $("#sex").text(student.sex == 'male'?'男':'女');
+        $("#age").text(student.age);
+        $("#phone").text(student.phone);
+        $("#qq").text(student.qq);
+        $("#email").text(student.email);
+        $("#password").text(student.password);
+
+    }
+
+
+    function deleteStudent() {
+        var studentId = $("#student_id").text();
+        window.location.href = "/admin/delete_student/"+studentId;
+    }
+
+    function goReturn() {
+        window.location.href = "/admin/show_student";
+    }
+    function update() {
+        var studentId = $("#student_id").text();
+        window.location.href = "/admin-update-student.htm?studentId="+studentId;
+    }
+
+</script>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>教师系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+
+    <style>
+        td {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .check {
+            max-width: 80px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+
+    <div class="panel panel-default" >
+        <div class="panel-heading text-center">试题库</div>
+        <table class="table" border="1" style="position: relative">
+            <tr>
+                <td class="check"><input type="checkbox" id="selectAll"/></td>
+                <td>试题编号</td>
+                <td>试题类型</td>
+                <td>题干</td>
+                <td>A</td>
+                <td>B</td>
+                <td>C</td>
+                <td>D</td>
+                <td>分值</td>
+                <td>参考答案</td>
+                <td>操作</td>
+
+            </tr>
+            <tr th:each="question : ${questionList}">
+                <td class="check"><input type="checkbox" name="ids" th:value="${question.questionId}"/></td>
+                <td th:text="${question.questionId}"></td>
+                <td th:text="${question.questionType}"></td>
+                <td th:text="${question.question}"></td>
+                <td th:text="${question.option1}"></td>
+                <td th:text="${question.option2}"></td>
+                <td th:text="${question.option3}"></td>
+                <td th:text="${question.option4}"></td>
+                <td th:text="${question.score}"></td>
+                <td th:text="${question.answer}" class="answer"></td>
+                <td>
+                    <a th:href="'/teacher-read-question.htm?questionId='+${question.questionId}">查看</a>&nbsp;&nbsp;
+                    <a th:href="'/teacher-update-question.htm?questionId='+${question.questionId}">修改</a>&nbsp;&nbsp;
+                    <a th:href="'/teacher/delete_question/'+${question.questionId}">删除</a>
+                </td>
+            </tr>
+        </table>
+
+        <div class="row" style="margin: 10px 0 20px 0">
+            <div class="col-md-1">
+                <button class="btn btn-primary btn-block" onclick="reserveAll()">反选</button>
+            </div>
+
+            <div class="col-md-7"></div>
+            <div class="col-md-2">
+                <button class="btn btn-primary btn-block" type="reset" onclick="addQuestion()">添加试题</button>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary btn-block" type="button" onclick="deleteAll()">批量删除</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+<script>
+    teacher('questions');
+
+    // 复选框的全选和全不选
+    $(function () {
+        $("#selectAll").click(function () {
+            $(":checkbox[name='ids']").prop("checked", this.checked); // this指代的你当前选择的这个元素的JS对象
+        });
+    });
+
+    function reserveAll() {
+        $("#selectAll").prop("checked", false);
+        $(":checkbox[name='ids']").each(function () {
+            this.checked = !this.checked;
+        });
+    }
+
+    function addQuestion() {
+        window.location.href = "/teacher-add-question.htm";
+    }
+
+    function deleteAll() {
+        var idList = [];
+        $(":checkbox[name='ids']").each(function () {
+            if ($(this).is(':checked')) {
+                idList.push(parseInt($(this).val()));
+            }
+        });
+
+        $.ajax({
+            url: "/teacher/delete_question_list",
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json", // 指定这个协议很重要
+            data: JSON.stringify(idList),
+            success: function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg("成功");
+                    window.location.href = "/teacher/questions";
+                } else {
+                    layer.msg(data.msg);
+                }
+            }
+            ,
+            error: function () {
+                layer.closeAll();
+            }
+        })
+        ;
+    }
+
+</script>
+</html>

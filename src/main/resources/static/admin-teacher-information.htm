@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>管理员系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+
+    <div class="panel panel-default" >
+        <div class="panel-heading text-center">教师信息</div>
+        <table class="table" border="1" with="500px">
+            <tr>
+                <td class="check"><input type="checkbox" id="selectAll"/></td>
+                <td>账号</td>
+                <td>姓名</td>
+                <td>性别</td>
+                <td>年龄</td>
+                <td>手机号码</td>
+                <td>QQ</td>
+                <td>email</td>
+                <td>密码（加密后）</td>
+                <td>操作</td>
+            </tr>
+            <tr th:each="teacher : ${teacherList}">
+                <td class="check"><input type="checkbox" name="ids" th:value="${teacher.id}"/></td>
+                <td th:text="${teacher.id}"></td>
+                <td th:text="${teacher.name}"></td>
+                <td th:text="${teacher.sex} == 'male'?'男':'女'"></td>
+                <td th:text="${teacher.age}"></td>
+                <td th:text="${teacher.phone}"></td>
+                <td th:text="${teacher.qq}"></td>
+                <td th:text="${teacher.email}"></td>
+                <td th:text="${teacher.password}"></td>
+                <td>
+                    <a th:href="'/admin-read-teacher.htm?teacherId='+${teacher.id}">查看</a>&nbsp;&nbsp;
+                    <a th:href="'/admin-update-teacher.htm?teacherId='+${teacher.id}">修改</a>&nbsp;&nbsp;
+                    <a th:href="'/admin/delete_teacher/'+${teacher.id}">删除</a>
+                </td>
+            </tr>
+        </table>
+        <div class="row" style="margin: 10px 0 20px 0">
+            <div class="col-md-1">
+                <button class="btn btn-primary btn-block" onclick="reserveAll()">反选</button>
+            </div>
+
+            <div class="col-md-7"></div>
+            <div class="col-md-2">
+                <button class="btn btn-primary btn-block" type="reset" onclick="addTeacher()">添加教师信息</button>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary btn-block" type="button" onclick="deleteAll()">批量删除</button>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+</body>
+<script>
+    admin('user-information');
+
+    // 复选框的全选和全不选
+    $(function () {
+        $("#selectAll").click(function () {
+            $(":checkbox[name='ids']").prop("checked", this.checked); // this指代的你当前选择的这个元素的JS对象
+        });
+    });
+
+    function reserveAll() {
+        $("#selectAll").prop("checked", false);
+        $(":checkbox[name='ids']").each(function () {
+            this.checked = !this.checked;
+        });
+    }
+
+    function addTeacher() {
+        window.location.href = "/admin/add_teacher";
+    }
+
+    function deleteAll() {
+        var idList = [];
+        $(":checkbox[name='ids']").each(function () {
+            if ($(this).is(':checked')) {
+                idList.push(parseInt($(this).val()));
+            }
+        });
+
+        $.ajax({
+            url: "/admin/delete_teacher_list",
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json", // 指定这个协议很重要
+            data: JSON.stringify(idList),
+            success: function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg("成功");
+                    window.location.href = "/admin/show_teacher";
+                } else {
+                    layer.msg(data.msg);
+                }
+            }
+            ,
+            error: function () {
+                layer.closeAll();
+            }
+        })
+        ;
+    }
+
+</script>
+</html>

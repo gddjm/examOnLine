@@ -1,0 +1,135 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>管理员系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+    <style>
+        textarea {
+            width: 400px;
+            height: 200px;
+            resize: none;
+        }
+    </style>
+
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+
+    <div class="panel panel-default" id="exam">
+        <div class="panel-heading text-center">查看考试</div>
+        <form id="examForm" method="post" name="examForm"
+              style="width:600px; margin:20px auto; padding:25px 25px 25px 25px; border:3px solid deepskyblue">
+            <table class="table" border="1" with="500px">
+                <tr>
+                    <td>考试编号</td>
+                    <td id="exam_id"></td>
+                </tr>
+                <tr>
+                    <td>试卷编号</td>
+                    <td id="text_id"></td>
+                </tr>
+                <tr>
+                    <td>开始时间</td>
+                    <td id="exam_start_time"></td>
+                </tr>
+                <tr>
+                    <td>结束时间</td>
+                    <td id="exam_end_time"></td>
+                </tr>
+                <tr>
+                    <td>考试类型</td>
+                    <td id="subject_type"></td>
+                </tr>
+
+
+            </table>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="button" onclick="deleteExam()">删除</button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary btn-block" type="button" onclick="update()">进行修改</button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="button" onclick="goReturn()">返回</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+</body>
+<script>
+    admin('exam');
+    var examId = g_getQueryString("examId");
+
+    function render(exam) {
+        $("#exam_id").text(exam.examId);
+        $("#text_id").text(exam.textId);
+        var startTime = new Date(exam.examStartTime);
+        var endTime = new Date(exam.examEndTime);
+        $("#exam_start_time").text(startTime.format('yyyy-MM-dd hh:mm'));
+        $("#exam_end_time").text(endTime.format('yyyy-MM-dd hh:mm'));
+        $("#subject_type").text(exam.subjectType);
+
+    }
+
+    $(function () {
+        getExam();
+    });
+
+    function getExam() {
+        $.ajax({
+            url: "/admin/get_exam/" + examId,
+            type: "GET",
+            success: function (data) {
+                if (data.code == 0) {
+                    render(data.data);
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        });
+    }
+
+
+    function deleteExam() {
+        var examId = $("#exam_id").text();
+        window.location.href = "/admin/delete_exam/" + examId;
+    }
+
+    function goReturn() {
+        window.location.href = "/admin/exam";
+    }
+
+    function update() {
+        window.location.href = "/admin-update-exam.htm?examId=" + examId;
+    }
+
+</script>
+</html>

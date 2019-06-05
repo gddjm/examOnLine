@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>管理员系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+
+    <div class="panel panel-default" >
+        <div class="panel-heading text-center">修改成绩</div>
+        <form id="examForm" method="post" name="examForm"
+              style="width:600px; margin:20px auto; padding:25px 25px 25px 25px; border:3px solid deepskyblue">
+            <table class="table" border="1" with="500px">
+                <tr>
+                    <td>准考账号</td>
+                    <td id="student_id"></td>
+                </tr>
+                <tr>
+                    <td>考试编号</td>
+                    <td><input type="text" id="exam_id"/></td>
+                </tr>
+                <tr>
+                    <td>成绩</td>
+                    <td><input type="text" id="score"/></td>
+                </tr>
+            </table>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="reset" onclick="getScore()">重置</button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary btn-block" type="submit" onclick="updateScore()">完成</button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="button" onclick="goReturn()">返回</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+</body>
+<script>
+    admin('student_score');
+    var scoreId = g_getQueryString("scoreId");
+    function getScore(){
+        $.ajax({
+            url: "/admin/get_score/" + scoreId,
+            type: "GET",
+            success: function (data) {
+                if (data.code == 0) {
+                    render(data.data);
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        });
+    }
+    $(function () {
+        getScore();
+    });
+
+    function render(score) {
+        $("#student_id").text(score.studentId);
+        $("#exam_id").val(score.examId);
+        $("#score").val(score.score);
+    }
+
+    function updateScore() {
+        $("#examForm").validate({
+            submitHandler: function (form) {
+                doUpate();
+            }
+        });
+    }
+
+    function goReturn() {
+        window.location.href = "/admin/score";
+    }
+
+    function doUpate() {
+
+        $.ajax({
+            url: "/admin/do_update_score",
+            type: "POST",
+            data: {
+                id:scoreId,
+                studentId: $("#student_id").text(),
+                examId: $("#exam_id").val(),
+                score: $("#score").val(),
+            },
+            success: function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg("成功");
+                    window.location.href = "/admin/score";
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.closeAll();
+            }
+        });
+    }
+
+</script>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>教师系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" th:src="@{/jquery-validation/jquery.validate.min.js}"></script>
+    <script type="text/javascript" th:src="@{/jquery-validation/localization/messages_zh.min.js}"></script>
+    <!-- layer -->
+    <script type="text/javascript" th:src="@{/layer/layer.js}"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" th:src="@{/js/md5.min.js}"></script>
+    <!-- common.js -->
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+            <h3 class="text-center">
+                <strong>教师系统</strong>
+            </h3>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <ul class="nav nav-tabs">
+                <li>
+                    <a href="/teacher/home">首页</a>
+                </li>
+                <li class="active">
+                    <a href="/teacher/mark">批阅试卷</a>
+                </li>
+                <li>
+                    <a href="/teacher/information">个人信息修改</a>
+                </li>
+                <li class="dropdown pull-right">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">更多 》》</a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/commun/about">关于我们</a>
+                        </li>
+                        <li>
+                            <a href="/commun/help">帮助</a>
+                        </li>
+                        <li class="divider">
+                        </li>
+                        <li>
+                            <a href="/teacher/update_password">修改密码</a>
+                        </li>
+                        <li>
+                            <a href="/teacher/logout">注销</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading text-center">考生答题卷</div>
+        <table class="table" id="goodslist" border="1" with="500px">
+            <tr>
+                <td>编号</td>
+                <td>试卷id</td>
+                <td>科目</td>
+                <td>考试时间</td>
+                <td>答题卷</td>
+                <td>是否评过分？</td>
+            </tr>
+            <tr th:each="studentAnswerInformation : ${studentAnswerInformationList}">
+                <td th:text="${studentAnswerInformation.id}"></td>
+                <td th:text="${studentAnswerInformation.textId}"></td>
+                <td th:text="${studentAnswerInformation.subjectType}"></td>
+                <td th:text="${#dates.format(studentAnswerInformation.examStartTime, 'yyyy-MM-dd HH:mm')}"></td>
+                <td><a th:href="@{/teacher/mark_text(studentId=${studentAnswerInformation.studentId},textId=${studentAnswerInformation.textId})}">阅卷</a></td>
+                <td th:text="${studentAnswerInformation.isMark}==true?'是':'否'"></td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

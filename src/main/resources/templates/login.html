@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>登录</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" th:src="@{/jquery-validation/jquery.validate.min.js}"></script>
+    <script type="text/javascript" th:src="@{/jquery-validation/localization/messages_zh.min.js}"></script>
+    <!-- layer -->
+    <script type="text/javascript" th:src="@{/layer/layer.js}"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" th:src="@{/js/md5.min.js}"></script>
+    <!-- common.js -->
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="text-center">
+            <strong>英语四六级网上考试系统</strong>
+        </h3>
+    </div>
+</div>
+<form name="loginForm" id="loginForm" method="post"
+      style="width:450px; margin:20px auto; padding:0 0 25px 25px; border:3px solid deepskyblue">
+
+    <h3 style="text-align:center; margin-bottom: 20px">用户登录</h3>
+
+    <div class="form-group">
+        <div class="row">
+            <label class="form-label col-md-4" align="right">请输入账号</label>
+            <div class="col-md-7">
+                <input id="account" name="account" class="form-control" type="text" placeholder="账号" required="true"
+                       minlength="11" maxlength="11"/>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <label class="form-label col-md-4" align="right">请输入密码</label>
+            <div class="col-md-7">
+                <input id="password" name="password" class="form-control" type="password" placeholder="密码"
+                       required="true" minlength="6" maxlength="16"/>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-8">
+        <input name="power" type="radio" checked="checked" value="student"/>&nbsp;学生&nbsp;&nbsp;&nbsp;
+        <input name="power" type="radio" value="teacher"/>&nbsp;教师&nbsp;&nbsp;&nbsp;
+        <input name="power" type="radio" value="admin"/>&nbsp;管理员&nbsp;&nbsp;&nbsp;
+        </div>
+    </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-4">
+            <button class="btn btn-primary btn-block" type="reset" onclick="register()">注册</button>
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-primary btn-block" type="submit" onclick="login()">登录</button>
+        </div>
+    </div>
+</form>
+</body>
+<script>
+    function login() {
+        $("#loginForm").validate({
+            submitHandler: function (form) {
+                doLogin();
+            }
+        });
+    }
+    function register() {
+        window.location.href = "/user/to_register";
+    }
+    function doLogin() {
+        g_showLoading();
+
+        var inputPass = $("#password").val();
+        var salt = g_passsword_salt;
+        var str = "" + salt.charAt(0) + salt.charAt(2) + inputPass + salt.charAt(5) + salt.charAt(4);
+        var password = md5(str);
+        var power = $("input[name='power']:checked").val();
+
+        $.ajax({
+            url: "/user/do_login",
+            type: "POST",
+            data: {
+                account: $("#account").val(),
+                password: password,
+                power: power
+            },
+            success: function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg("成功");
+                    if (power === "student") {
+                        window.location.href = "/stu/home";
+                    } else if (power === "teacher") {
+                        window.location.href = "/teacher/home";
+                    } else if (power === "admin"){
+                        window.location.href = "/admin/home";
+                    }
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.closeAll();
+            }
+        });
+    }
+</script>
+</html>

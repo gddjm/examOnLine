@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>学生系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" th:src="@{/jquery-validation/jquery.validate.min.js}"></script>
+    <script type="text/javascript" th:src="@{/jquery-validation/localization/messages_zh.min.js}"></script>
+    <!-- layer -->
+    <script type="text/javascript" th:src="@{/layer/layer.js}"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" th:src="@{/js/md5.min.js}"></script>
+    <!-- common.js -->
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+            <h3 class="text-center">
+                <strong>学生系统</strong>
+            </h3>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <ul class="nav nav-tabs">
+                <li>
+                    <a href="/stu/home">首页</a>
+                </li>
+                <li class="active">
+                    <a href="/stu/exam">在线考试</a>
+                </li>
+                <li>
+                    <a href="/stu/score">成绩查询</a>
+                </li>
+                <li>
+                    <a href="/stu/information">个人信息修改</a>
+                </li>
+                <li class="dropdown pull-right">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">更多 》》</a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/commun/about">关于我们</a>
+                        </li>
+                        <li>
+                            <a href="/commun/help">帮助</a>
+                        </li>
+                        <li class="divider">
+                        </li>
+                        <li>
+                            <a href="/stu/update_password">修改密码</a>
+                        </li>
+                        <li>
+                            <a href="/stu/logout">注销</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--<div class="panel-body" th:if="${student eq null}">-->
+        <!--<span> 您还没有登录，请<a href="/user/to_login">登录</a>后再操作<br/></span>-->
+    <!--</div>-->
+    <div th:class="rule">
+        <div class="row-fluid">
+            <div class="span12">
+                <p class="text-center">
+                    <strong><em>提示</em></strong>
+                </p>
+            </div>
+        </div>
+        <div class="col-md-12">考试结束</div>
+
+
+        <button class="btn btn-primary btn-block" onclick="startExam()"
+                style="max-width:300px;margin-bottom: 20px;margin-left: 40%">
+            返回
+        </button>
+    </div>
+
+</div>
+</body>
+<script>
+    function startExam() {
+        window.location.href = "/stu/exam";
+    }
+
+</script>
+</html>

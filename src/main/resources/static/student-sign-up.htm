@@ -1,0 +1,141 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>学生系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+
+    <style>
+        label {
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+    <div class="panel panel-default">
+        <div class="panel-heading text-center">考试列表</div>
+        <table class="table" border="1" with="500px">
+            <tr>
+                <td>考试编号</td>
+                <td>科目</td>
+                <td>考试时间</td>
+                <td>操作</td>
+            </tr>
+            <div th:if="${#lists.isEmpty(examList)}">
+                <tr>
+                    <th style="text-align:center ;" colspan="4">暂无可报名的考试</th>
+                </tr>
+            </div>
+            <div th:unless="${#lists.isEmpty(examList)}">
+                <tr th:each="exam : ${examList}">
+                    <td th:text="${exam.examId}"></td>
+                    <td th:text="${exam.subjectType}"></td>
+                    <td th:text="${#dates.format(exam.examStartTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td><a th:href="'/stu/do_sign_up?examId='+${exam.examId}">报考</a></td>
+                </tr>
+            </div>
+        </table>
+    </div>
+</div>
+</body>
+<script>
+    student('sign_up');
+
+    function getStudent() {
+        $.ajax({
+            url: "/stu/get_student",
+            type: "GET",
+            success: function (data) {
+                if (data.code == 0) {
+                    render(data.data);
+                } else {
+                    window.location.href = "/login-tip.htm";
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        });
+    }
+
+    $(function () {
+        getStudent();
+    });
+
+    function render(student) {
+        $("#id").val(student.id);
+        $("#name").val(student.name);
+        $("#score").val(student.score);
+        $("#" + student.sex).prop("checked", true);
+        $("#age").val(student.age);
+        $("#phone").val(student.phone);
+        $("#qq").val(student.qq);
+        $("#email").val(student.email);
+
+    }
+
+    function change_information() {
+        $("#informationForm").validate({
+            submitHandler: function (form) {
+                do_change_information();
+            }
+        });
+    }
+
+    function do_change_information() {
+        var inputPass = $("#password").val();
+        var salt = g_passsword_salt;
+        var str = "" + salt.charAt(0) + salt.charAt(2) + inputPass + salt.charAt(5) + salt.charAt(4);
+        var password = md5(str);
+
+
+        $.ajax({
+            url: "/stu/do_change_information",
+            type: "POST",
+            data: {
+                id: parseInt($("#id").val()),
+                name: $("#name").val(),
+                sex: $('input[name="sex"]:checked').val(),
+                age: parseInt($("#age").val()),
+                phone: $("#phone").val(),
+                qq: parseInt($("#qq").val()),
+                email: $("#email").val(),
+                password: password,
+                salt: salt
+            },
+            success: function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg("成功");
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.closeAll();
+            }
+        });
+
+    }
+
+</script>
+</html>

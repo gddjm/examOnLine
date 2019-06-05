@@ -1,0 +1,131 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>管理员系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+    <style>
+        .check {
+            max-width: 80px;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+
+    <div class="panel panel-default" >
+        <div class="panel-heading text-center">学生成绩</div>
+        <table class="table" border="1" with="500px">
+            <tr>
+                <td class="check"><input type="checkbox" id="selectAll"/></td>
+                <td>准考账号</td>
+                <td>姓名</td>
+                <td>考试编号</td>
+                <td>科目</td>
+                <td>考试时间</td>
+                <td>成绩</td>
+                <td>操作</td>
+            </tr>
+            <tr th:each="scoreInformation : ${scoreInformationList}">
+                <td class="check"><input type="checkbox" name="ids" th:value="${scoreInformation.id}"/></td>
+                <td th:text="${scoreInformation.studentId}"></td>
+                <td th:text="${scoreInformation.studentName}"></td>
+                <td th:text="${scoreInformation.examId}"></td>
+                <td th:text="${scoreInformation.subjectType}"></td>
+                <td th:text="${#dates.format(scoreInformation.examStartTime, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${scoreInformation.score}"></td>
+                <td>
+                    <a th:href="'/admin-read-score.htm?scoreId='+${scoreInformation.id}">查看</a>&nbsp;&nbsp;
+                    <a th:href="'/admin-update-score.htm?scoreId='+${scoreInformation.id}">修改</a>&nbsp;&nbsp;
+                    <a th:href="'/admin/delete_score/'+${scoreInformation.id}">删除</a>
+                </td>
+            </tr>
+        </table>
+        <div class="row" style="margin: 10px 0 20px 0">
+            <div class="col-md-1">
+                <button class="btn btn-primary btn-block" onclick="reserveAll()">反选</button>
+            </div>
+
+            <div class="col-md-7"></div>
+            <div class="col-md-2">
+                <button class="btn btn-primary btn-block" type="reset" onclick="addScore()">添加成绩</button>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary btn-block" type="button" onclick="deleteAll()">批量删除</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</body>
+<script>
+    admin('student_score');
+
+    // 复选框的全选和全不选
+    $(function () {
+        $("#selectAll").click(function () {
+            $(":checkbox[name='ids']").prop("checked", this.checked); // this指代的你当前选择的这个元素的JS对象
+        });
+    });
+    function reserveAll() {
+        $("#selectAll").prop("checked", false);
+        $(":checkbox[name='ids']").each(function () {
+            this.checked = !this.checked;
+        });
+    }
+    function addScore() {
+        window.location.href = "/admin-add-score.htm";
+    }
+
+    function deleteAll() {
+        var idList = [];
+        $(":checkbox[name='ids']").each(function () {
+            if ($(this).is(':checked')) {
+                idList.push(parseInt($(this).val()));
+            }
+        });
+
+        $.ajax({
+            url: "/admin/delete_score_list",
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json", // 指定这个协议很重要
+            data: JSON.stringify(idList),
+            success: function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg("成功");
+                    window.location.href = "/admin/score";
+                } else {
+                    layer.msg(data.msg);
+                }
+            }
+            ,
+            error: function () {
+                layer.closeAll();
+            }
+        })
+        ;
+    }
+</script>
+</html>

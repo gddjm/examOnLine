@@ -1,0 +1,190 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>学生系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+    <style>
+        textarea {
+            width: 400px;
+            height: 200px;
+            resize: none;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+    <div>
+        <div class="panel panel-default">
+            <div class="panel-heading text-center"><strong><em>大学英语考场</em></strong></div>
+            <form id="examForm" method="post" name="examForm"
+                  style="width:600px; margin:20px auto; padding:0 0 25px 25px; border:3px solid deepskyblue"
+            >
+                <h3 style="text-align:center; margin-bottom: 20px"
+                    th:text="'大学英语'+'考试试卷'"></h3>
+                <div class="row">
+                    <div class="col-md-6">开始时间：<span
+                            th:text="${#dates.format(exam.examStartTime, 'yyyy-MM-dd HH:mm')}"></span></div>
+                    <div class="col-md-6">结束时间：<span
+                            th:text="${#dates.format(exam.examEndTime, 'yyyy-MM-dd HH:mm')}"></span></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">试卷编号：<span th:id="text_id" th:name="text_id" th:text="${exam.textId}"></span>
+                    </div>
+                    <div class="col-md-6">试卷分值：<span th:id="score" th:name="score" th:text="${score}"></span></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">考生姓名：<span th:id="student_name" th:text="${student.name}"></span></div>
+                    <div class="col-md-6">考生学号：<span th:id="student_id" th:text="${student.id}"></span></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">剩余时间：<span th:id="time"></span></div>
+                </div>
+                <hr style="border:1px dashed #987cb9"/>
+
+                <div th:each="question,questionStat  : ${questionsList}" class="question">
+                    <div class="question_title"> (<span class="question_number" th:text="${question.questionId}"></span>)
+                        <span th:text="${question.question}+'('+${question.score}+'分)'"></span></div>
+                    <input th:class="question_type" th:value="${question.questionType}" type="hidden"/>
+                    <div th:if="${question.questionType eq 'choice'}" class="choice_question">
+                        <div class="choice_question">
+                            <div><input th:name="${'question_'+question.questionId}" type="radio" value="A"/>A、<span
+                                    th:text="${question.option1}"></span></div>
+                            <div><input th:name="${'question_'+question.questionId}" type="radio" value="B"/>B、<span
+                                    th:text="${question.option2}"></span></div>
+                            <div><input th:name="${'question_'+question.questionId}" type="radio" value="C"/>C、<span
+                                    th:text="${question.option3}"></span></div>
+                            <div><input th:name="${'question_'+question.questionId}" type="radio" value="D"/>D、<span
+                                    th:text="${question.option4}"></span></div>
+                        </div>
+                    </div>
+                    <div th:if="${question.questionType eq 'writing'}" class="writing_question">
+
+                        <div><textarea id="writing_answer" class="writing_answer"></textarea>
+                        </div>
+                    </div>
+                    <div th:if="${question.questionType eq 'translation'}" class="translation_question">
+
+                        <div><textarea id="translation_answer" class="translation_answer"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <button class="btn btn-primary btn-block" type="submit" onclick="submitExam();" id="submit">
+                            提交试卷
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+</body>
+<script>
+    student('exam');
+</script>
+<script th:inline="javascript">
+
+    function submitExam() {
+        $("#examForm").validate({
+            submitHandler: function (form) {
+                doSubmit();
+            }
+        });
+    }
+
+    var endTime = new Date([[${exam.examEndTime}]]).getTime();
+    var nowTime = [[${now}]];
+    var time = endTime - nowTime;
+    /* <![CDATA[ */
+    setInterval(function () {
+        if (time <= 0) {
+            $("#submit").click();
+        } else {
+            var text = parseInt(time / 1000 / 60 / 60 % 60) + "时" + parseInt(time / 1000 / 60 % 60) + "分" + parseInt(time / 1000 % 60) + "秒";
+            $("#time").text(text);
+            time -= 1000;
+        }
+    }, 1000);
+
+    /* ]]> */
+
+    function doSubmit() {
+        var answerList = [];
+        var questionNumberList = $(".question_number");
+        var questionTypeList = $(".question_type");
+        var theTextId = parseInt($("#text_id").text());
+        var theStudentId = parseInt($("#student_id").text());
+
+        /* <![CDATA[ */
+        for (var i = 0; i < $(".question").size(); i++) {
+            var qNumber = parseInt($(questionNumberList[i]).text());
+            var qType = $(questionTypeList[i]).val()
+            var obj = {
+                textId: theTextId,
+                studentId: theStudentId,
+                questionNumber: qNumber,
+                questionType: qType,
+            };
+
+            if (qType == "choice") {
+                obj.answer = $('input[name=question_' + qNumber + ']:checked').val()
+            } else if (qType == "writing") {
+                obj.answer = $("#writing_answer").val();
+
+            } else if (qType == "translation") {
+
+                obj.answer = $("#translation_answer").val();
+            }
+            answerList.push(obj);
+
+        }
+        /* ]]> */
+
+
+        $.ajax({
+            url: "/stu/do_exam_submit",
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json", // 指定这个协议很重要
+            data: JSON.stringify(answerList),
+            success: function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg("成功");
+                    window.location.href = "/student-submit-success.htm";
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.closeAll();
+            }
+        });
+    }
+</script>
+</html>

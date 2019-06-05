@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>学生系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading text-center">学生成绩</div>
+        <table class="table" border="1" with="500px">
+            <tr>
+                <td>准考账号</td>
+                <td>姓名</td>
+                <td>考试编号</td>
+                <td>科目</td>
+                <td>考试时间</td>
+                <td>成绩</td>
+            </tr>
+            <tr th:each="scoreInformation : ${scoreInformationList}">
+                <td th:text="${scoreInformation.studentId}"></td>
+                <td th:text="${scoreInformation.studentName}"></td>
+                <td th:text="${scoreInformation.examId}"></td>
+                <td th:text="${scoreInformation.subjectType}"></td>
+                <td th:text="${#dates.format(scoreInformation.examStartTime, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${scoreInformation.score}"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+<script>
+    student('score');
+
+</script>
+</html>

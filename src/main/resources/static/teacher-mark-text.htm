@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>教师系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+
+    <form id="markForm" method="post" name="markForm"
+          style="width:600px; margin:20px auto; padding:0 0 25px 25px; border:3px solid deepskyblue">
+        <h3 style="text-align:center; margin-bottom: 20px">时间</h3>
+
+        <div>试卷编号：<span th:id="textId" th:name="textId" th:text="${textId}"></span></div>
+        <div th:each="studentAnswer,studentAnswerStat  : ${studentAnswerList}">
+            <div th:if="${studentAnswer.questionType eq 'choice'}">
+                <div> (<span name="choice_question_number" th:text="${studentAnswer.questionNumber}"></span>)
+                    <sapn th:text="${studentAnswer.answer}"></sapn>
+                    <span><input type="text" placeholder="得分" class="pull-right mark"
+                                 style="width: 50px; height: 20px; margin-right: 50px"/></span>
+                </div>
+            </div>
+            <div th:if="${studentAnswer.questionType eq 'writing'}">
+                <div> (<span id="writing_question_number" th:text="${studentAnswer.questionNumber}"></span>)<br/>
+                    <span><textarea id="writing_answer" name="writing_answer mark" th:text="${studentAnswer.answer}"
+                                    style="width: 400px;height: 200px;max-height: 200px;max-width: 400px;"
+                                    readonly="readonly"></textarea>
+                    </span>
+                    <span><input type="text" placeholder="得分" class="pull-right mark"
+                                 style="width: 50px; height: 20px; margin-right: 50px"/></span>
+                </div>
+
+            </div>
+            <div th:if="${studentAnswer.questionType eq 'translation'}">
+                <div> (<span id="translation_question_number" th:text="${studentAnswer.questionNumber}"></span>)<br/>
+                    <span><textarea id="translation_answer" th:text="${studentAnswer.answer}" readonly="readonly"
+                                    style="width: 400px;height: 200px;max-height: 200px;max-width: 400px;"></textarea>
+                    </span>
+                    <span><input type="text" placeholder="得分" class="pull-right mark"
+                                 style="width: 50px; height: 20px; margin-right: 50px"/></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <button class="btn btn-primary btn-block" type="submit" onclick="submitScore();">批阅完成，提交评分
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <p hidden="hidden" id="student_id" th:text="${studentId}"></p>
+    <p hidden="hidden" id="exam_id" th:text="${examId}"></p>
+
+
+</div>
+</body>
+<script th:inline="javascript">
+    teacher('mark');
+
+    function submitScore() {
+        $("#markForm").validate({
+            submitHandler: function (form) {
+                doSubmit();
+            }
+        });
+    }
+
+    function doSubmit() {
+        var mark = 0;
+        $(".mark").each(function () {
+            if ($(this).val() == "") {
+                alert("你还没给值")
+                return false;
+            } else {
+                mark = mark + parseInt($(this).val());
+            }
+        });
+        $.ajax({
+            url: "/teacher/submit_mark",
+            type: "POST",
+            data: {
+                studentId:parseInt($("#student_id").text()),
+                score:mark,
+                examId:parseInt($("#exam_id").text())
+            },
+            success: function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg("成功");
+                    window.location.href = "/teacher/mark";
+                } else {
+                    layer.msg(data.msg);
+                }
+            }
+            ,
+            error: function () {
+                layer.closeAll();
+            }
+        })
+        ;
+    }
+
+</script>
+</html>

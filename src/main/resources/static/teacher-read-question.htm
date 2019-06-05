@@ -1,0 +1,174 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>教师系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <!-- active-class.js -->
+    <script type="text/javascript" src="/js/active-class.js"></script>
+    <style>
+        textarea {
+            width: 400px;
+            height: 200px;
+            resize: none;
+        }
+    </style>
+
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="header"></div>
+
+    <div class="panel panel-default" id="questions">
+        <div class="panel-heading text-center">查看试题</div>
+        <form id="examForm" method="post" name="examForm"
+              style="width:600px; margin:20px auto; padding:25px 25px 25px 25px; border:3px solid deepskyblue">
+            <table class="table" border="1" with="500px">
+                <tr>
+                    <td width="140px">试题编号</td>
+                    <td id="question_id"></td>
+                </tr>
+                <tr>
+                    <td>试题类型</td>
+                    <td id="question_type"><input type="text"/></td>
+                </tr>
+                <tr>
+                    <td>题干</td>
+                    <td id="question"></td>
+                </tr>
+                <tr class="choice_option">
+                    <td>A</td>
+                    <td id="option1"></td>
+                </tr>
+                <tr class="choice_option">
+                    <td>B</td>
+                    <td id="option2"></td>
+                </tr>
+                <tr class="choice_option">
+                    <td>C</td>
+                    <td id="option3"></td>
+                </tr>
+                <tr class="choice_option">
+                    <td>D</td>
+                    <td id="option4"></td>
+                </tr>
+                <tr>
+                    <td>分值</td>
+                    <td id="score"></td>
+                </tr>
+                <tr>
+                    <td>参考答案</td>
+                    <td>
+                        <p id="choice_answer"/>
+                        <p id="not_choice_answer"></p>
+                    </td>
+                </tr>
+
+
+            </table>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="button" onclick="deleteQuestion()">删除</button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary btn-block" type="button" onclick="update()">进行修改</button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" type="button" onclick="goReturn()">返回</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+</body>
+<script>
+    teacher('questions');
+    var questionId = g_getQueryString("questionId");
+
+    function render(question) {
+        $("#question_id").text(question.questionId);
+        $("#question_type").text(question.questionType);
+        $("#question").text(question.question);
+        if (question.questionType == 'choice') {
+            $("#option1").text(question.option1);
+            $("#option2").text(question.option2);
+            $("#option3").text(question.option3);
+            $("#option4").text(question.option4);
+            $("#not_choice_answer").hide();
+            $("#choice_answer").text(question.answer);
+
+        } else {
+            $(".choice_option").hide();
+            $("#choice_answer").hide();
+            $("#not_choice_answer").text(question.answer);
+        }
+
+        $("#score").text(question.score);
+
+    }
+
+    $(function () {
+        getQuestions();
+
+    });
+
+    function getQuestions() {
+        $.ajax({
+            url: "/teacher/get_question/" + questionId,
+            type: "GET",
+            success: function (data) {
+                if (data.code == 0) {
+                    render(data.data);
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        });
+    }
+
+    $(function () {
+        $("input:text").each(function () {
+            $(this).attr("readonly", "readonly");
+        });
+        $("textarea").each(function () {
+            $(this).attr("readonly", "readonly");
+        });
+    });
+
+    function deleteQuestion() {
+        var questionId = $("#question_id").text();
+        window.location.href = "/teacher/delete_question/" + questionId;
+    }
+
+    function goReturn() {
+        window.location.href = "/teacher/questions";
+    }
+
+    function update() {
+        window.location.href = "/teacher-update-question.htm?questionId=" + questionId;
+    }
+
+</script>
+</html>
